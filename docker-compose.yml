@@ -2,8 +2,8 @@ services:
   app:
     build: .
     ports:
-      - 8010:8000
-      - 5678:5678
+      - "8010:8000"
+      - "5678:5678"
     volumes:
       - .:/code
     command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
@@ -17,10 +17,10 @@ services:
   ollama:
     image: docker.io/ollama/ollama:latest
     ports:
-      - 7869:11434
+      - "7869:11434"
     volumes:
-      - .:/code
-      - ./ollama/ollama:/root/.ollama
+      # Utilisation d'un volume managé pour éviter les conflits de permissions hôte/invité
+      - ollama_data:/root/.ollama
     container_name: ollama
     pull_policy: always
     tty: true
@@ -39,22 +39,23 @@ services:
     depends_on:
       - ollama
     ports:
-      - 8090:8080
-    environment: # https://docs.openwebui.com/getting-started/env-configuration#default_models
-      - OLLAMA_BASE_URLS=http://host.docker.internal:7869 #comma separated ollama hosts
+      - "8090:8080"
+    environment:
+      # Optimisation réseau : On cible directement le conteneur 'ollama' sur son port interne
+      - OLLAMA_BASE_URLS=http://ollama:11434
       - ENV=dev
       - WEBUI_AUTH=False
       - WEBUI_NAME=valiantlynx AI
       - WEBUI_URL=http://localhost:8080
       - WEBUI_SECRET_KEY=t0p-s3cr3t
-      - NO_PROXY=host.docker.internal 
-    extra_hosts:
-      - host.docker.internal:host-gateway
     restart: unless-stopped
     networks:
       - ollama-docker
 
 networks:
   ollama-docker:
-    external: false
-  
+    driver: bridge
+
+# Déclaration du volume managé au niveau global
+volumes:
+  ollama_data:
