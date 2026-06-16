@@ -30,7 +30,10 @@ services:
       - OLLAMA_HOST=0.0.0.0
     networks:
       - ollama-docker
-
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.services.ollama-backend.loadbalancer.server.port=11434"
   ollama-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: ollama-webui
@@ -51,7 +54,10 @@ services:
     restart: unless-stopped
     networks:
       - ollama-docker
-
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.services.ollama-webui.loadbalancer.server.port=8080"
 networks:
   ollama-docker:
     driver: bridge
