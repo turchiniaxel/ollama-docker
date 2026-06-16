@@ -12,7 +12,7 @@ services:
       - ollama
       - ollama-webui
     networks:
-      - ollama-docker
+      - dokploy-network
 
   ollama:
     image: docker.io/ollama/ollama:latest
@@ -29,7 +29,7 @@ services:
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_HOST=0.0.0.0
     networks:
-      - ollama-docker
+      - dokploy-network
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
@@ -53,14 +53,14 @@ services:
       - WEBUI_SECRET_KEY=t0p-s3cr3t
     restart: unless-stopped
     networks:
-      - ollama-docker
+      - dokploy-network
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=dokploy-network"
       - "traefik.http.services.ollama-webui.loadbalancer.server.port=8080"
 networks:
-  ollama-docker:
-    driver: bridge
+  dokploy-network:
+    external: true
 
 # Déclaration du volume managé au niveau global
 volumes:
