@@ -42,7 +42,7 @@ services:
     depends_on:
       - ollama
     ports:
-      - "8090:8080"
+      - "8090:3000"
     environment:
       # Optimisation réseau : On cible directement le conteneur 'ollama' sur son port interne
       - OLLAMA_BASE_URLS=http://ollama:11434
